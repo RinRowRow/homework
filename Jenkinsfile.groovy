@@ -15,6 +15,7 @@ def gitInstruction = """Универсальный способ исправит
 pipeline {
     triggers {
         issueCommentTrigger('START-TEST')
+        issueCommentTrigger('GIT-FIX')
     }
     agent any
     stages {
@@ -45,6 +46,15 @@ pipeline {
                         error('Unauthorized SOURCE branch modification')
                     } else {
                         removeLabel('WRONG BRANCH')
+                    }
+                    for (comment in pullRequest.comments) {
+                        if (comment.body.startsWith('GIT-FIX')) {
+                            sh "./gradlew --stacktrace fixGit " +
+                                    "-PsourceBranch='${pullRequest.headRef}' " +
+                                    "-PforkRepo='https://github.com/${CHANGE_AUTHOR}/homework.git'"
+                            removeLabel('HELP ME')
+                            pullRequest.deleteComment(comment.id)
+                        }
                     }
                     try {
                         //try {
