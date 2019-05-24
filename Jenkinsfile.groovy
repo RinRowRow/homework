@@ -14,8 +14,7 @@ def gitInstruction = """Универсальный способ исправит
 4. Сделать force-push в ветку в своём форке"""
 pipeline {
     triggers {
-        issueCommentTrigger('START-TEST')
-        issueCommentTrigger('GIT-FIX')
+        issueCommentTrigger('(START-TEST)|(GIT-FIX)')
     }
     agent any
     stages {
